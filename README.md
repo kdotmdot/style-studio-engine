@@ -38,7 +38,7 @@ packs bring, so Ledger refuses to render it.*
 ## Set up
 
 ```bash
-git clone https://github.com/kelano86/style-studio-engine
+git clone https://github.com/kdotmdot/style-studio-engine
 ```
 
 ```bash
