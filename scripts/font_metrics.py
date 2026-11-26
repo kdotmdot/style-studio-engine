@@ -20,7 +20,9 @@ import sys
 from fontTools.ttLib import TTFont
 from fontTools.varLib.instancer import instantiateVariableFont
 
-CHARS = string.ascii_letters + string.digits + string.punctuation + ' ' + '’‘“”–—…·×£€'
+# Launch languages are English and Spanish: the Spanish letters and marks are measured too.
+SPANISH = 'áéíóúüñÁÉÍÓÚÜÑ¿¡«»'
+CHARS = string.ascii_letters + string.digits + string.punctuation + ' ' + '’‘“”–—…·×£€' + SPANISH
 
 
 def load(spec):

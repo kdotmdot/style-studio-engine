@@ -1,3 +1,5 @@
+import type { Metrics } from './metrics';
+
 // A style pack: everything about how a creator's videos look and move, as data. One engine (src/kit, src/scenes)
 // reads one pack per render, picked with the input prop `pack` (src/engine/style.ts). Packs live in src/packs/.
 //
@@ -285,7 +287,35 @@ export type Pace = {
   wordsPerMinute: [number, number];
 };
 
+/**
+ * (pipeline) How the editing pipeline cuts videos in this style. The engine never reads it; pack/compile.py turns it,
+ * with the rest of the pack, into the pipeline's style files. Full definition: pack/schema/pack-v2.schema.json.
+ */
+export type Production = {
+  defaultMode: 'hifi' | 'lofi' | 'showcase';
+  creator?: { name?: string; handle?: string; site?: string; headshot?: string | null };
+  /** Per-mode settings for the pipeline (its style.json `modes` block), j_lead included. */
+  modes?: Record<string, Record<string, unknown>>;
+  captions?: Record<string, Record<string, unknown>>;
+  sound?: { sfx?: 'light' | 'normal' | 'dense'; music?: string };
+  /** A CSS filter on the footage, or "none". */
+  grade?: string;
+  motion?: 'calm' | 'punchy';
+  endCard?: boolean;
+  /** Raw pipeline style.json keys merged last. */
+  overrides?: Record<string, unknown>;
+};
+
 export type StylePack = {
+  /** The pack format: 2 adds `production`. Left out, 1. */
+  packVersion?: 1 | 2;
+  /**
+   * Letter metrics for faces the engine doesn't ship, by the key a voice names in `metrics` (scripts/font_metrics.py
+   * writes them; pack/add_font.py adds them with the font). Looked up before the engine's own table.
+   */
+  metrics?: Record<string, Metrics>;
+  /** (pipeline) see Production. Left out, the pipeline's defaults in hi-fi. */
+  production?: Production;
   id: string;
   name: string;
   description: string;

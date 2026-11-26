@@ -1,12 +1,12 @@
 import { advances } from './metrics';
-import { TYPE, voiceAdjust, type VoiceName } from './style';
+import { PACK, TYPE, voiceAdjust, type VoiceName } from './style';
 
 // Type laid out from letter metrics (scripts/font_metrics.py) rather than measured in the browser, so a layout is the
 // same on every frame of a render. Advances are scaled by the voice's size rule, as its glyphs are.
 
 const table = (v: VoiceName) => {
   const a = voiceAdjust(v);
-  return Object.fromEntries(Object.entries(advances(TYPE[v].metrics)).map(([k, x]) => [k, x * a])) as Record<string, number>;
+  return Object.fromEntries(Object.entries(advances(TYPE[v].metrics, PACK)).map(([k, x]) => [k, x * a])) as Record<string, number>;
 };
 const TABLES: Partial<Record<VoiceName, Record<string, number>>> = {};
 const tableOf = (v: VoiceName) => (TABLES[v] ??= table(v));

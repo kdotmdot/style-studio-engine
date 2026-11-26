@@ -45,9 +45,19 @@ export const METRICS: Record<string, Metrics> = {
   'space-grotesk-700': m(spaceGrotesk700),
 };
 
+/**
+ * A face's metrics: the pack's own first (a font the engine doesn't ship, measured when it was added to the pack: an
+ * uploaded font or one picked from Google Fonts), then the shipped table.
+ */
+export const metricsOf = (key: string, pack?: { id?: string; metrics?: Record<string, Metrics> }): Metrics => {
+  const mt = pack?.metrics?.[key] ?? METRICS[key];
+  if (!mt) throw new Error(`No letter metrics "${key}"${pack?.id ? ` in the "${pack.id}" pack` : ''} or among the engine's faces. Measure the font with scripts/font_metrics.py and add it to the pack's "metrics".`);
+  return mt;
+};
+
 /** A face's advance table (em) at its first weight. */
-export const advances = (key: string) => {
-  const mt = METRICS[key];
+export const advances = (key: string, pack?: { id?: string; metrics?: Record<string, Metrics> }) => {
+  const mt = metricsOf(key, pack);
   const w = Object.keys(mt).find((k) => /^\d+$/.test(k))!;
   return (mt[w] as { advance: Record<string, number> }).advance;
 };

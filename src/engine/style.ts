@@ -6,7 +6,7 @@ import pop from '../packs/pop.json';
 import sketch from '../packs/sketch.json';
 import terminal from '../packs/terminal.json';
 import volt from '../packs/volt.json';
-import { METRICS } from './metrics';
+import { METRICS, metricsOf } from './metrics';
 import type { StylePack } from './pack';
 import { REFERENCE } from './reference';
 
@@ -77,7 +77,7 @@ export const checkPack = (p: StylePack): StylePack => {
   for (const v of VOICES) {
     const voice = p.type?.[v];
     if (!shape(voice, false)) missing.push(`type.${v}`);
-    else if (!Object.hasOwn(METRICS, voice.metrics)) missing.push(`type.${v}.metrics "${voice.metrics}" (register it in src/engine/metrics.ts)`);
+    else if (!Object.hasOwn(p.metrics ?? {}, voice.metrics) && !Object.hasOwn(METRICS, voice.metrics)) missing.push(`type.${v}.metrics "${voice.metrics}" (add it to the pack's "metrics", or register it in src/engine/metrics.ts)`);
     else if (!p.fonts?.some((f) => f?.family === voice.family)) missing.push(`a font file for ${v}'s family "${voice.family}"`);
   }
   if (missing.length) throw new Error(`${name} is missing: ${missing.join(', ')}`);
@@ -122,7 +122,7 @@ export const requireScene = (scene: string, pack: StylePack = PACK) => {
 export const voiceAdjust = (v: VoiceName, pack: StylePack = PACK): number => {
   const voice = pack.type[v];
   if (voice.layout.match === 'none') return 1;
-  const face = METRICS[voice.metrics];
+  const face = metricsOf(voice.metrics, pack);
   return voice.layout.match === 'cap' ? REFERENCE.capHeight / face.capHeight : REFERENCE.xHeight / face.xHeight;
 };
 
